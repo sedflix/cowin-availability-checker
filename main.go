@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	cowin "github.com/sedflix/cowin-availability-checker/swagger"
+	"strings"
 )
 
 var client *cowin.APIClient
@@ -14,7 +16,7 @@ func GetStateID(stateName string) (string, error) {
 		return "", err
 	}
 	for _, state := range states.States {
-		if stateName == state.StateName {
+		if strings.Contains(strings.ToLower(state.StateName), strings.ToLower(stateName)) {
 			return fmt.Sprintf("%f", state.StateId), nil
 		}
 	}
@@ -33,7 +35,7 @@ func GetDistrictIDUsingStateID(stateID, districtName string) (string, error) {
 	}
 
 	for _, district := range districts.Districts {
-		if districtName == district.DistrictName {
+		if strings.Contains(strings.ToLower(district.DistrictName), strings.ToLower(districtName)) {
 			return fmt.Sprintf("%f", district.DistrictId), nil
 		}
 	}
@@ -79,9 +81,9 @@ func ListAvailableCentres(districtId string) error {
 	if err != nil {
 		return err
 	}
-	for i, centre := range *centres.Centers {
+	for _, centre := range *centres.Centers {
 		if IsCentreAvailable(centre) {
-			fmt.Printf("%d: %s available \n", i, centre.Name)
+			fmt.Printf("%s available \n", centre.Name)
 
 		}
 	}
@@ -89,12 +91,22 @@ func ListAvailableCentres(districtId string) error {
 }
 
 func main() {
+	var state = flag.String("s", "Uttar Pradesh", "Name of the Sate")
+	var district = flag.String("d", "Lucknow", "Name of the District")
+	flag.Parse()
+
 	client = cowin.NewAPIClient(cowin.NewConfiguration())
 
-	districtId, err := GetDistrictID("Uttar Pradesh", "Lucknow")
+	districtId, err := GetDistrictID(*state, *district)
 	if err != nil {
-
+		fmt.Printf("%s", err)
+		panic(1)
 	}
 
-	ListAvailableCentres(districtId)
+	err = ListAvailableCentres(districtId)
+	if err != nil {
+		fmt.Printf("%s", err)
+		panic(1)
+	}
+
 }

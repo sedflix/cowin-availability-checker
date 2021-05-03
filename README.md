@@ -4,11 +4,19 @@ List and notify about all any vaccination appointment is present in your Distric
 
 ## Setup
 
+### From Source
+
 ```
 go get github.com/sedflix/cowin-availability-checker
 cd $GOPATH/src/github.com/sedflix/cowin-availability-checker
 go build .
 ```
+
+### Using binary
+
+Get the required binary from [releases](https://github.com/sedflix/cowin-availability-checker/releases/)
+
+### Using docker
 
 ## Usage
 

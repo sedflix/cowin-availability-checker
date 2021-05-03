@@ -19,7 +19,7 @@ func Notify(message string) {
 }
 
 func IsSessionAvailable(session cowin.SessionCalendarEntrySchemaSessions) bool {
-	if session.MinAgeLimit >= 45 {
+	if session.MinAgeLimit < 45 {
 		if session.AvailableCapacity > 0 {
 			return true
 		}
